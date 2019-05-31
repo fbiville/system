@@ -18,6 +18,7 @@
 package resources
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/knative/pkg/kmeta"
@@ -53,29 +54,12 @@ func MakeDeployment(proc *streamv1alpha1.Processor) (*appsv1.Deployment, error) 
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
-						corev1.Container{
+						{
 							Name:  "processor",
-							Image: "ericbottard/processor:grpc-be83df8",
-							Env: []corev1.EnvVar{
-								{
-									Name:  "INPUTS",
-									Value: strings.Join(proc.Status.InputAddresses, ","),
-								},
-								{
-									Name:  "OUTPUTS",
-									Value: strings.Join(proc.Status.OutputAddresses, ","),
-								},
-								{
-									Name:  "GROUP",
-									Value: proc.Name,
-								},
-								{
-									Name:  "FUNCTION",
-									Value: "localhost:8080",
-								},
-							},
+							Image: "ericbottard/processor:grpc-be83df8", // TODO: update for output content-type support
+							Env:   computeEnvironmentVariables(proc),
 						},
-						corev1.Container{
+						{
 							Name:  "function",
 							Image: proc.Status.FunctionImage,
 							Ports: []corev1.ContainerPort{
@@ -91,4 +75,37 @@ func MakeDeployment(proc *streamv1alpha1.Processor) (*appsv1.Deployment, error) 
 	}
 
 	return deployment, nil
+}
+
+func computeEnvironmentVariables(processor *streamv1alpha1.Processor) []corev1.EnvVar {
+	return append([]corev1.EnvVar{
+		{
+			Name:  "INPUTS",
+			Value: strings.Join(processor.Status.InputAddresses, ","),
+		},
+		{
+			Name:  "OUTPUTS",
+			Value: strings.Join(processor.Status.OutputAddresses, ","),
+		},
+		{
+			Name:  "GROUP",
+			Value: processor.Name,
+		},
+		{
+			Name:  "FUNCTION",
+			Value: "localhost:8080",
+		},
+	}, exposeOutputContentTypes("OUTPUT_CONTENT_", processor.Status.OutputContentTypes)...)
+}
+
+func exposeOutputContentTypes(keyPrefix string, outputContentTypes []string) []corev1.EnvVar {
+	outputCount := len(outputContentTypes)
+	result := make([]corev1.EnvVar, outputCount)
+	for i := 0; i < outputCount; i++ {
+		result[i] = corev1.EnvVar{
+			Name:  fmt.Sprintf("%s%d", keyPrefix, i),
+			Value: outputContentTypes[i],
+		}
+	}
+	return result
 }
