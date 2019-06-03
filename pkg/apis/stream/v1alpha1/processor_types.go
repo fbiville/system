@@ -54,7 +54,7 @@ type ProcessorStatus struct {
 
 	InputAddresses     []string `json:"inputAddresses,omitempty"`
 	OutputAddresses    []string `json:"outputAddresses,omitempty"`
-	OutputContentTypes []string `json:"outputAddresses,omitempty"`
+	OutputContentTypes []string `json:"outputContentTypes,omitempty"`
 	DeploymentName     string   `json:"deploymentName,omitempty"`
 	FunctionImage      string   `json:"functionImage,omitempty"`
 }
