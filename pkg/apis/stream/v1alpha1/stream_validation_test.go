@@ -85,6 +85,12 @@ func TestValidateStreamSpec(t *testing.T) {
 		},
 		want: nil,
 	}, {
+		name: "valid without explicit content-type",
+		s: &StreamSpec{
+			Provider: "kafka",
+		},
+		want: nil,
+	}, {
 		name: "empty",
 		s:    &StreamSpec{},
 		want: apis.ErrMissingField(apis.CurrentField),
@@ -95,12 +101,6 @@ func TestValidateStreamSpec(t *testing.T) {
 			ContentType: "image/*",
 		},
 		want: apis.ErrMissingField("provider"),
-	}, {
-		name: "requires content-type",
-		s: &StreamSpec{
-			Provider:    "kafka",
-		},
-		want: apis.ErrMissingField("content-type"),
 	}} {
 		name := c.name
 		t.Run(name, func(t *testing.T) {

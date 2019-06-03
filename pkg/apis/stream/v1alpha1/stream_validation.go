@@ -42,9 +42,5 @@ func (ss *StreamSpec) Validate(ctx context.Context) *apis.FieldError {
 		errs = errs.Also(apis.ErrMissingField("provider"))
 	}
 
-	if ss.ContentType == "" {
-		errs = errs.Also(apis.ErrMissingField("content-type"))
-	}
-
 	return errs
 }
