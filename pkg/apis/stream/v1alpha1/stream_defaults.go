@@ -22,6 +22,6 @@ func (s *Stream) SetDefaults(ctx context.Context) {
 	s.Spec.SetDefaults(ctx)
 }
 
-func (spec *StreamSpec) SetDefaults(ctx context.Context) {
+func (ss *StreamSpec) SetDefaults(ctx context.Context) {
 	// TODO
 }

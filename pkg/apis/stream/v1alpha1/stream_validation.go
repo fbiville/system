@@ -31,18 +31,18 @@ func (s *Stream) Validate(ctx context.Context) *apis.FieldError {
 	return errs
 }
 
-func (s *StreamSpec) Validate(ctx context.Context) *apis.FieldError {
-	if equality.Semantic.DeepEqual(s, &StreamSpec{}) {
+func (ss *StreamSpec) Validate(ctx context.Context) *apis.FieldError {
+	if equality.Semantic.DeepEqual(ss, &StreamSpec{}) {
 		return apis.ErrMissingField(apis.CurrentField)
 	}
 
 	errs := &apis.FieldError{}
 
-	if s.Provider == "" {
+	if ss.Provider == "" {
 		errs = errs.Also(apis.ErrMissingField("provider"))
 	}
 
-	if s.ContentType == "" {
+	if ss.ContentType == "" {
 		errs = errs.Also(apis.ErrMissingField("content-type"))
 	}
 
