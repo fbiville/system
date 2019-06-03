@@ -23,5 +23,7 @@ func (s *Stream) SetDefaults(ctx context.Context) {
 }
 
 func (ss *StreamSpec) SetDefaults(ctx context.Context) {
-	ss.ContentType = "application/octet-stream"
+	if ss.ContentType == "" {
+		ss.ContentType = "application/octet-stream"
+	}
 }
