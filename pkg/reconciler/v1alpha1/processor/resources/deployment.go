@@ -18,7 +18,7 @@
 package resources
 
 import (
-	"fmt"
+	"encoding/json"
 	"strings"
 
 	"github.com/knative/pkg/kmeta"
@@ -32,6 +32,10 @@ import (
 
 func MakeDeployment(proc *streamv1alpha1.Processor) (*appsv1.Deployment, error) {
 	one := int32(1)
+	environmentVariables, err := computeEnvironmentVariables(proc)
+	if err != nil {
+		return nil, err
+	}
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:            names.Deployment(proc),
@@ -57,7 +61,7 @@ func MakeDeployment(proc *streamv1alpha1.Processor) (*appsv1.Deployment, error) 
 						{
 							Name:  "processor",
 							Image: "ericbottard/processor:grpc-be83df8", // TODO: update for output content-type support
-							Env:   computeEnvironmentVariables(proc),
+							Env:   environmentVariables,
 						},
 						{
 							Name:  "function",
@@ -77,8 +81,12 @@ func MakeDeployment(proc *streamv1alpha1.Processor) (*appsv1.Deployment, error) 
 	return deployment, nil
 }
 
-func computeEnvironmentVariables(processor *streamv1alpha1.Processor) []corev1.EnvVar {
-	return append([]corev1.EnvVar{
+func computeEnvironmentVariables(processor *streamv1alpha1.Processor) ([]corev1.EnvVar, error) {
+	contentTypesJson, err := serializeContentTypes(processor.Status.OutputContentTypes)
+	if err != nil {
+		return nil, err
+	}
+	return []corev1.EnvVar{
 		{
 			Name:  "INPUTS",
 			Value: strings.Join(processor.Status.InputAddresses, ","),
@@ -95,17 +103,30 @@ func computeEnvironmentVariables(processor *streamv1alpha1.Processor) []corev1.E
 			Name:  "FUNCTION",
 			Value: "localhost:8080",
 		},
-	}, exposeOutputContentTypes("OUTPUT_CONTENT_", processor.Status.OutputContentTypes)...)
+		{
+			Name:  "OUTPUT_CONTENT_TYPES",
+			Value: contentTypesJson,
+		},
+	}, nil
 }
 
-func exposeOutputContentTypes(keyPrefix string, outputContentTypes []string) []corev1.EnvVar {
+type outputContentType struct {
+	outputIndex int
+	contentType string
+}
+
+func serializeContentTypes(outputContentTypes []string) (string, error) {
 	outputCount := len(outputContentTypes)
-	result := make([]corev1.EnvVar, outputCount)
+	result := make([]outputContentType, outputCount)
 	for i := 0; i < outputCount; i++ {
-		result[i] = corev1.EnvVar{
-			Name:  fmt.Sprintf("%s%d", keyPrefix, i),
-			Value: outputContentTypes[i],
+		result[i] = outputContentType{
+			outputIndex: i,
+			contentType: outputContentTypes[i],
 		}
 	}
-	return result
+	bytes, err := json.Marshal(result)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
 }
