@@ -212,8 +212,9 @@ func (c *Reconciler) reconcile(ctx context.Context, processor *streamv1alpha1.Pr
 	}
 	processor.Status.InputAddresses = inputAddresses
 
-	// resolve output addresses
-	for _, outputName := range processor.Spec.Outputs {
+	// resolve output addresses and content-types
+	outputContentTypes := make([]string, len(processor.Spec.Outputs))
+	for i, outputName := range processor.Spec.Outputs {
 		output, err := c.streamLister.Streams(processor.Namespace).Get(outputName)
 		if err != nil {
 			return err
@@ -223,6 +224,7 @@ func (c *Reconciler) reconcile(ctx context.Context, processor *streamv1alpha1.Pr
 			return err
 		}
 		outputAddresses = append(outputAddresses, output.Status.Address.String())
+		outputContentTypes[i] = output.Spec.ContentType
 	}
 	processor.Status.OutputAddresses = outputAddresses
 
