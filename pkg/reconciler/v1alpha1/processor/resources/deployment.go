@@ -111,8 +111,8 @@ func computeEnvironmentVariables(processor *streamv1alpha1.Processor) ([]corev1.
 }
 
 type outputContentType struct {
-	outputIndex int
-	contentType string
+	OutputIndex int    `json:"outputIndex"`
+	ContentType string `json:"contentType"`
 }
 
 func serializeContentTypes(outputContentTypes []string) (string, error) {
@@ -120,8 +120,8 @@ func serializeContentTypes(outputContentTypes []string) (string, error) {
 	result := make([]outputContentType, outputCount)
 	for i := 0; i < outputCount; i++ {
 		result[i] = outputContentType{
-			outputIndex: i,
-			contentType: outputContentTypes[i],
+			OutputIndex: i,
+			ContentType: outputContentTypes[i],
 		}
 	}
 	bytes, err := json.Marshal(result)
