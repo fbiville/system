@@ -227,6 +227,7 @@ func (c *Reconciler) reconcile(ctx context.Context, processor *streamv1alpha1.Pr
 		outputContentTypes[i] = output.Spec.ContentType
 	}
 	processor.Status.OutputAddresses = outputAddresses
+	processor.Status.OutputContentTypes = outputContentTypes
 
 	deploymentName := resourcenames.Deployment(processor)
 	deployment, err := c.deploymentLister.Deployments(processor.Namespace).Get(deploymentName)
