@@ -23,6 +23,14 @@ type ProcessorListerExpansion interface{}
 // ProcessorNamespaceLister.
 type ProcessorNamespaceListerExpansion interface{}
 
+// ProviderListerExpansion allows custom methods to be added to
+// ProviderLister.
+type ProviderListerExpansion interface{}
+
+// ProviderNamespaceListerExpansion allows custom methods to be added to
+// ProviderNamespaceLister.
+type ProviderNamespaceListerExpansion interface{}
+
 // StreamListerExpansion allows custom methods to be added to
 // StreamLister.
 type StreamListerExpansion interface{}

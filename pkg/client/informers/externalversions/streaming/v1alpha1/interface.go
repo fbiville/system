@@ -23,6 +23,8 @@ import (
 type Interface interface {
 	// Processors returns a ProcessorInformer.
 	Processors() ProcessorInformer
+	// Providers returns a ProviderInformer.
+	Providers() ProviderInformer
 	// Streams returns a StreamInformer.
 	Streams() StreamInformer
 }
@@ -41,6 +43,11 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // Processors returns a ProcessorInformer.
 func (v *version) Processors() ProcessorInformer {
 	return &processorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Providers returns a ProviderInformer.
+func (v *version) Providers() ProviderInformer {
+	return &providerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Streams returns a StreamInformer.

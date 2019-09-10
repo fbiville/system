@@ -73,6 +73,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		// Group=streaming.projectriff.io, Version=v1alpha1
 	case streaming_v1alpha1.SchemeGroupVersion.WithResource("processors"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Streaming().V1alpha1().Processors().Informer()}, nil
+	case streaming_v1alpha1.SchemeGroupVersion.WithResource("providers"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Streaming().V1alpha1().Providers().Informer()}, nil
 	case streaming_v1alpha1.SchemeGroupVersion.WithResource("streams"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Streaming().V1alpha1().Streams().Informer()}, nil
 

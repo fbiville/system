@@ -25,6 +25,7 @@ import (
 type StreamingV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	ProcessorsGetter
+	ProvidersGetter
 	StreamsGetter
 }
 
@@ -35,6 +36,10 @@ type StreamingV1alpha1Client struct {
 
 func (c *StreamingV1alpha1Client) Processors(namespace string) ProcessorInterface {
 	return newProcessors(c, namespace)
+}
+
+func (c *StreamingV1alpha1Client) Providers(namespace string) ProviderInterface {
+	return newProviders(c, namespace)
 }
 
 func (c *StreamingV1alpha1Client) Streams(namespace string) StreamInterface {

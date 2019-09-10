@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package v1alpha1
 
-type ProcessorExpansion interface{}
+import "context"
 
-type ProviderExpansion interface{}
+func (p *Provider) SetDefaults(ctx context.Context) {
+	p.Spec.SetDefaults(ctx)
+}
 
-type StreamExpansion interface{}
+func (ps *ProviderSpec) SetDefaults(ctx context.Context) {
+	// TODO
+}

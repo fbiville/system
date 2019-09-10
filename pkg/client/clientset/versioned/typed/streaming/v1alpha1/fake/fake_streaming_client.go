@@ -29,6 +29,10 @@ func (c *FakeStreamingV1alpha1) Processors(namespace string) v1alpha1.ProcessorI
 	return &FakeProcessors{c, namespace}
 }
 
+func (c *FakeStreamingV1alpha1) Providers(namespace string) v1alpha1.ProviderInterface {
+	return &FakeProviders{c, namespace}
+}
+
 func (c *FakeStreamingV1alpha1) Streams(namespace string) v1alpha1.StreamInterface {
 	return &FakeStreams{c, namespace}
 }
