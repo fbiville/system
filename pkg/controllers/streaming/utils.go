@@ -18,6 +18,8 @@ package streaming
 
 import (
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 /*
@@ -30,4 +32,8 @@ func ignoreNotFound(err error) error {
 		return nil
 	}
 	return err
+}
+
+func namespacedNamedFor(ref metav1.ObjectMetaAccessor) types.NamespacedName {
+	return types.NamespacedName{Namespace: ref.GetObjectMeta().GetNamespace(), Name: ref.GetObjectMeta().GetName()}
 }

@@ -25,13 +25,15 @@ import (
 const (
 	ProcessorConditionReady = apis.ConditionReady
 	// TODO add aggregated streams ready status
-	ProcessorConditionFunctionReady   apis.ConditionType = "FunctionReady"
-	ProcessorConditionDeploymentReady apis.ConditionType = "DeploymentReady"
+	ProcessorConditionFunctionReady     apis.ConditionType = "FunctionReady"
+	ProcessorConditionDeploymentReady   apis.ConditionType = "DeploymentReady"
+	ProcessorConditionScaledObjectReady apis.ConditionType = "ScaledObjectReady"
 )
 
 var processorCondSet = apis.NewLivingConditionSet(
 	ProcessorConditionFunctionReady,
 	ProcessorConditionDeploymentReady,
+	ProcessorConditionScaledObjectReady,
 )
 
 func (ps *ProcessorStatus) GetObservedGeneration() int64 {
@@ -61,6 +63,7 @@ func (ps *ProcessorStatus) MarkFunctionNotFound(name string) {
 
 func (ps *ProcessorStatus) PropagateFunctionStatus(fs *buildv1alpha1.FunctionStatus) {
 	ps.FunctionImage = fs.LatestImage
+	ps.FunctionImage = "ericbottard/fn" // TODO remove once build ctrl exists
 
 	sc := fs.GetCondition(buildv1alpha1.FunctionConditionReady)
 	if sc == nil {
@@ -79,6 +82,11 @@ func (ps *ProcessorStatus) PropagateFunctionStatus(fs *buildv1alpha1.FunctionSta
 func (ps *ProcessorStatus) MarkDeploymentNotOwned(name string) {
 	processorCondSet.Manage(ps).MarkFalse(ProcessorConditionDeploymentReady, "NotOwned",
 		"There is an existing Deployment %q that we do not own.", name)
+}
+
+func (ps *ProcessorStatus) MarkScaledObjectNotOwned(name string) {
+	processorCondSet.Manage(ps).MarkFalse(ProcessorConditionScaledObjectReady, "NotOwned",
+		"There is an existing ScaledObject %q that we do not own.", name)
 }
 
 func (ps *ProcessorStatus) PropagateDeploymentStatus(ds *appsv1.DeploymentStatus) {

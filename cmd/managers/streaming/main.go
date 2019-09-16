@@ -23,6 +23,8 @@ import (
 	"os"
 	"time"
 
+	kedav1alpha1 "github.com/kedacore/keda/pkg/apis/keda/v1alpha1"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	streamingv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	controllers "github.com/projectriff/system/pkg/controllers/streaming"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -42,6 +44,8 @@ var (
 
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
+	_ = buildv1alpha1.AddToScheme(scheme)
+	_ = kedav1alpha1.AddToScheme(scheme)
 
 	_ = streamingv1alpha1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
@@ -92,6 +96,8 @@ func main() {
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("Processor"),
 		Scheme: mgr.GetScheme(),
+		Tracker:   tracker.New(syncPeriod),
+		Namespace: namespace,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Processor")
 		os.Exit(1)
