@@ -90,12 +90,11 @@ else
 CONTROLLER_GEN=$(shell which controller-gen)
 endif
 
-ACTUAL_CTOR_GEN_VERSION=$(shell $(CONTROLLER_GEN) --version)
 .PHONY: check-controller-gen
 # fail if version does not match
 check-controller-gen:
-ifneq ("Version: v0.2.4", "$(ACTUAL_CTOR_GEN_VERSION)")
-	$(error Bad controller-gen version ($(ACTUAL_CTOR_GEN_VERSION)). Please run 'cd `mktemp -d` && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4 && cd -')
+ifneq ("Version: v0.2.4", "$(shell $(CONTROLLER_GEN) --version)")
+	$(error Bad controller-gen version. Please run 'cd `mktemp -d` && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4 && cd -')
 endif
 
 # find or download goimports, download goimports if necessary
