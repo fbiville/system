@@ -84,7 +84,7 @@ generate-internal: controller-gen check-controller-gen
 controller-gen:
 ifeq (, $(shell which controller-gen))
 	# avoid go.* mutations from go get
-	( cd .. && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4 )
+	( cd $(mktemp -d) && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4 )
 CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
@@ -95,7 +95,7 @@ ACTUAL_CTOR_GEN_VERSION=$(shell $(CONTROLLER_GEN) --version)
 # fail if version does not match
 check-controller-gen:
 ifneq ("Version: v0.2.4", "$(ACTUAL_CTOR_GEN_VERSION)")
-	$(error Bad controller-gen version ($(ACTUAL_CTOR_GEN_VERSION)). Please run 'cd .. && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4')
+	$(error Bad controller-gen version ($(ACTUAL_CTOR_GEN_VERSION)). Please run 'cd $(mktemp -d) && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4')
 endif
 
 # find or download goimports, download goimports if necessary
