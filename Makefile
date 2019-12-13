@@ -77,7 +77,7 @@ vet:
 generate: generate-internal fmt ## Generate code
 
 .PHONY: generate-internal
-generate-internal: controller-gen
+generate-internal: controller-gen check-controller-gen
 	$(CONTROLLER_GEN) object:headerFile=./hack/boilerplate.go.txt paths="./..."
 
 # find or download controller-gen, download controller-gen if necessary
@@ -88,6 +88,14 @@ ifeq (, $(shell which controller-gen))
 CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
+endif
+
+ACTUAL_CTOR_GEN_VERSION=$(shell $(CONTROLLER_GEN) --version)
+.PHONY: check-controller-gen
+# fail if version does not match
+check-controller-gen:
+ifneq ("Version: v0.2.4", "$(ACTUAL_CTOR_GEN_VERSION)")
+	$(error Bad controller-gen version ($(ACTUAL_CTOR_GEN_VERSION)). Please run 'cd .. && GO111MODULE=on go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4')
 endif
 
 # find or download goimports, download goimports if necessary
